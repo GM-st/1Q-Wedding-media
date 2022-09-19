@@ -4,10 +4,10 @@ interface ItemProps {
   title: string;
   id: number;
   price: number;
-  hearts: number;
+  // hearts: number;
 }
 
-export default function Item({ title, price, hearts, id }: ItemProps) {
+export default function Item({ title, price, /*hearts,*/ id }: ItemProps) {
   return (
     <Link href={`/products/${id}`}>
       <a className="flex px-4 pt-5 cursor-pointer justify-between">
@@ -34,7 +34,7 @@ export default function Item({ title, price, hearts, id }: ItemProps) {
                 d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
               ></path>
             </svg>
-            <span>{hearts}</span>
+            {/* <span>{hearts}</span> */}
           </div>
         </div>
       </a>
