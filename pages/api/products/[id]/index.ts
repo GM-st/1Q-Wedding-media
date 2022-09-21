@@ -7,49 +7,56 @@ async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseType>
 ) {
-  if (req.method === "GET") {
-    const products = await client.product.findMany({
-      include: {
-        _count: {
-          select: {
-            favs: true,
-          },
+  const {
+    query: { id },
+    session: { user },
+  } = req;
+  const product = await client.product.findUnique({
+    where: {
+      id: +id.toString(),
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          avatar: true,
         },
       },
-    });
-    res.json({
-      ok: true,
-      products,
-    });
-  }
-  if (req.method === "POST") {
-    const {
-      body: { name, price, description },
-      session: { user },
-    } = req;
-    const product = await client.product.create({
-      data: {
-        name,
-        price: +price,
-        description,
-        image: "xx",
-        user: {
-          connect: {
-            id: user?.id,
-          },
+    },
+  });
+  const terms = product?.name.split(" ").map((word) => ({
+    name: {
+      contains: word,
+    },
+  }));
+  const relatedProducts = await client.product.findMany({
+    where: {
+      OR: terms,
+      AND: {
+        id: {
+          not: product?.id,
         },
       },
-    });
-    res.json({
-      ok: true,
-      product,
-    });
-  }
+    },
+  });
+  const isLiked = Boolean(
+    await client.fav.findFirst({
+      where: {
+        productId: product?.id,
+        userId: user?.id,
+      },
+      select: {
+        id: true,
+      },
+    })
+  );
+  res.json({ ok: true, product, isLiked, relatedProducts });
 }
 
 export default withApiSession(
   withHandler({
-    methods: ["GET", "POST"],
+    methods: ["GET"],
     handler,
   })
 );
