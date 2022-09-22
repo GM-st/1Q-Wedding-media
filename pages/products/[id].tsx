@@ -8,6 +8,7 @@ import { Product, User } from "@prisma/client";
 import useMutation from "@libs/client/useMutation";
 import { cls } from "@libs/client/utils";
 import useUser from "@libs/client/useUser";
+import Image from "next/image";
 
 interface ProductWithUser extends Product {
   user: User;
@@ -20,26 +21,37 @@ interface ItemDetailResponse {
 }
 
 const ItemDetail: NextPage = () => {
-  const{user, isLoading} = useUser();
+  const { user, isLoading } = useUser();
   const router = useRouter();
-  const {mutate} = useSWRConfig();
-  const { data, mutate:boundMutate } = useSWR<ItemDetailResponse>(
+  const { mutate } = useSWRConfig();
+  const { data, mutate: boundMutate } = useSWR<ItemDetailResponse>(
     router.query.id ? `/api/products/${router.query.id}` : null
   );
   const [toggleFav] = useMutation(`/api/products/${router.query.id}/fav`);
   const onFavClick = () => {
     if (!data) return;
     boundMutate((prev) => prev && { ...prev, isLiked: !prev.isLiked }, false);
-    // mutate("/api/users/me", (prev: any) => ({ok:!prev.ok}), false);
+    // mutate("/api/users/me", (prev: any) => ({ ok: !prev.ok }), false);
     toggleFav({});
   };
   return (
     <Layout canGoBack>
       <div className="px-4  py-4">
         <div className="mb-8">
-          <div className="h-96 bg-slate-300" />
+          <div className="relative  pb-80">
+            <Image
+              src={`https://imagedelivery.net/TVBGaGVEEFEx2XRfUrS1gQ/${data?.product.image}/public`}
+              className="bg-slate-300 object-cover"
+              layout="fill"
+            />
+          </div>
           <div className="flex cursor-pointer py-3 border-t border-b items-center space-x-3">
-            <div className="w-12 h-12 rounded-full bg-slate-300" />
+            <Image
+              width={48}
+              height={48}
+              src={`https://imagedelivery.net/TVBGaGVEEFEx2XRfUrS1gQ/${data?.product?.user?.avatar}/avatar`}
+              className="w-12 h-12 rounded-full bg-slate-300"
+            />
             <div>
               <p className="text-sm font-medium text-gray-700">
                 {data?.product?.user?.name}
