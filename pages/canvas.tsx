@@ -28,8 +28,6 @@ function App({ width, height }: CanvasProps) {
     };
   };
 
-  
-
   const drawLine = (originalMousePosition: Coordinate, newMousePosition: Coordinate) => {
     if (!canvasRef.current) {
       return;
