@@ -3,6 +3,7 @@ import Button from "@components/button";
 import Input from "@components/input";
 import Layout from "@components/layout";
 import useUser from "@libs/client/useUser";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import useMutation from "@libs/client/useMutation";
@@ -38,7 +39,6 @@ const EditProfile: NextPage = () => {
       setAvatarPreview(
         `https://imagedelivery.net/TVBGaGVEEFEx2XRfUrS1gQ/${user?.avatar}/avatar`
       );
-      
   }, [user, setValue]);
   const [editProfile, { data, loading }] =
     useMutation<EditProfileResponse>(`/api/users/me`);
@@ -93,9 +93,10 @@ const EditProfile: NextPage = () => {
       <form onSubmit={handleSubmit(onValid)} className="py-10 px-4 space-y-4">
         <div className="flex items-center space-x-3">
           {avatarPreview ? (
-            <img
+            <Image
               src={avatarPreview}
               className="w-14 h-14 rounded-full bg-slate-500"
+              alt="avatar"
             />
           ) : (
             <div className="w-14 h-14 rounded-full bg-slate-500" />
