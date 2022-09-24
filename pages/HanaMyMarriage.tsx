@@ -41,11 +41,11 @@ const Home: NextPage = () => {
 			<li className="flex">
 				<a rel="noopener noreferrer" href="#" className="flex items-center px-4 -mb-1 border-b-2 border-transparent">마이페이지</a>
 			</li>
-			{/* <li className="flex">
-				<a rel="noopener noreferrer" href="#" className="flex items-center px-4 -mb-1 border-b-2 border-transparent text-teal-600 border-teal-600">하객관리</a>
-			</li> */}
 			<li className="flex">
-				<a rel="noopener noreferrer" href="/HanaMyMarriage" className="flex items-center px-4 -mb-1 border-b-2 border-transparent">내결혼식관리</a>
+				<a rel="noopener noreferrer" href="#" className="flex items-center px-4 -mb-1 border-b-2 border-transparent text-teal-600 border-teal-600">하객관리</a>
+			</li>
+			<li className="flex">
+				<a rel="noopener noreferrer" href="#" className="flex items-center px-4 -mb-1 border-b-2 border-transparent">내결혼식관리</a>
 			</li>
 		</ul>
 		<button className="flex justify-end p-4 md:hidden">
@@ -60,13 +60,11 @@ const Home: NextPage = () => {
     <div>
       <section className="bg-transparent text-gray-800">
 	    <div className="container mx-auto flex flex-col items-center px-4 py-16 text-center md:py-32 md:px-10 lg:px-32 xl:max-w-3xl">
-		<h1 className="text-4xl font-bold leading-none sm:text-5xl">
-			<span className="text-teal-600">1Q </span>Wedding
-		</h1>
+		
 		<p className="px-8 mt-8 mb-12 text-lg"></p>
 		<div className="flex flex-wrap justify-center">
-			<button onClick={()=>{location.href="http://localhost:8080/member/hanaLogin"}} className="px-8 py-3 m-2 text-lg font-semibold rounded bg-teal-600 text-gray-50">로그인</button>
-			<button onClick={()=>{location.href="http://localhost:8080/member/join"}} className="px-8 py-3 m-2 text-lg border rounded text-gray-900 border-gray-300">회원가입</button>
+			<button onClick={()=>{location.href="http://localhost:8080/account/transactionList"}} className="px-8 py-3 m-2 text-lg font-semibold rounded bg-teal-600 text-gray-50">축의금관리</button>
+			<button onClick={()=>{location.href="/HanaMessageSelect"}} className="px-8 py-3 m-2 text-lg border rounded text-gray-900 border-gray-300">축하메시지관리</button>
 		  </div>
 	    </div>
       </section>

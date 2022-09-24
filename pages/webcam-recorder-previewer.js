@@ -1,111 +1,153 @@
-// define the media track constraints object
-// NB https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
-(function () {
-    const constraintObj = {
-      audio: true,
-      video: true,
-      // video: {
-      //   facingMode: "user",
-      //   width: { min: 640, ideal: 1280, max: 1920 },
-      //   height: { min: 480, ideal: 720, max: 1080 }
-      // }
-  
-      // Other useful props:
-      // width: 1280, height: 720  -- preference only
-      // facingMode: {exact: "user"} // forcing to be user camera
-      // facingMode: "environment"
-    };
-  
-    // handle older browsers that might implement getUserMedia in some way
-    if (navigator.mediaDevices === undefined) {
-      navigator.mediaDevices = {};
-      navigator.mediaDevices.getUserMedia = function (constraintObj) {
-        const getUserMedia =
-          navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-        if (!getUserMedia) {
-          return Promise.reject(
-            new Error("getUserMedia is not implemented in this browser")
-          );
-        }
-        return new Promise(function (resolve, reject) {
-          getUserMedia.call(navigator, constraintObj, resolve, reject);
-        });
-      };
-    } else {
-      // this logs all Audio/Video IO connections:
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then(devices => {
-          devices.forEach(device => {
-            console.log(device.kind.toUpperCase(), device.label);
-            //, device.deviceId
-          });
-        })
-        .catch(err => {
-          console.log(err.name, err.message);
-        });
+/*
+*  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
+*
+*  Use of this source code is governed by a BSD-style license
+*  that can be found in the LICENSE file in the root of the source
+*  tree.
+*/
+
+// This code is adapted from
+// https://rawgit.com/Miguelao/demos/master/mediarecorder.html
+
+'use strict';
+
+/* globals MediaRecorder */
+
+let mediaRecorder;
+let recordedBlobs;
+
+const codecPreferences = document.querySelector('#codecPreferences');
+
+const errorMsgElement = document.querySelector('span#errorMsg');
+const recordedVideo = document.querySelector('video#recorded');
+const recordButton = document.querySelector('button#record');
+recordButton.addEventListener('click', () => {
+  if (recordButton.textContent === 'Start Recording') {
+    startRecording();
+  } else {
+    stopRecording();
+    recordButton.textContent = 'Start Recording';
+    playButton.disabled = false;
+    downloadButton.disabled = false;
+    codecPreferences.disabled = false;
+  }
+});
+
+const playButton = document.querySelector('button#play');
+playButton.addEventListener('click', () => {
+  const mimeType = codecPreferences.options[codecPreferences.selectedIndex].value.split(';', 1)[0];
+  const superBuffer = new Blob(recordedBlobs, {type: mimeType});
+  recordedVideo.src = null;
+  recordedVideo.srcObject = null;
+  recordedVideo.src = window.URL.createObjectURL(superBuffer);
+  recordedVideo.controls = true;
+  recordedVideo.play();
+});
+
+const downloadButton = document.querySelector('button#download');
+downloadButton.addEventListener('click', () => {
+  const blob = new Blob(recordedBlobs, {type: 'video/webm'});
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = url;
+  a.download = 'test.webm';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 100);
+});
+
+function handleDataAvailable(event) {
+  console.log('handleDataAvailable', event);
+  if (event.data && event.data.size > 0) {
+    recordedBlobs.push(event.data);
+  }
+}
+
+function getSupportedMimeTypes() {
+  const possibleTypes = [
+    'video/webm;codecs=vp9,opus',
+    'video/webm;codecs=vp8,opus',
+    'video/webm;codecs=h264,opus',
+    'video/mp4;codecs=h264,aac',
+  ];
+  return possibleTypes.filter(mimeType => {
+    return MediaRecorder.isTypeSupported(mimeType);
+  });
+}
+
+function startRecording() {
+  recordedBlobs = [];
+  const mimeType = codecPreferences.options[codecPreferences.selectedIndex].value;
+  const options = {mimeType};
+
+  try {
+    mediaRecorder = new MediaRecorder(window.stream, options);
+  } catch (e) {
+    console.error('Exception while creating MediaRecorder:', e);
+    errorMsgElement.innerHTML = `Exception while creating MediaRecorder: ${JSON.stringify(e)}`;
+    return;
+  }
+
+  console.log('Created MediaRecorder', mediaRecorder, 'with options', options);
+  recordButton.textContent = 'Stop Recording';
+  playButton.disabled = true;
+  downloadButton.disabled = true;
+  codecPreferences.disabled = true;
+  mediaRecorder.onstop = (event) => {
+    console.log('Recorder stopped: ', event);
+    console.log('Recorded Blobs: ', recordedBlobs);
+  };
+  mediaRecorder.ondataavailable = handleDataAvailable;
+  mediaRecorder.start();
+  console.log('MediaRecorder started', mediaRecorder);
+}
+
+function stopRecording() {
+  mediaRecorder.stop();
+}
+
+function handleSuccess(stream) {
+  recordButton.disabled = false;
+  console.log('getUserMedia() got stream:', stream);
+  window.stream = stream;
+
+  const gumVideo = document.querySelector('video#gum');
+  gumVideo.srcObject = stream;
+
+  getSupportedMimeTypes().forEach(mimeType => {
+    const option = document.createElement('option');
+    option.value = mimeType;
+    option.innerText = option.value;
+    codecPreferences.appendChild(option);
+  });
+  codecPreferences.disabled = false;
+}
+
+async function init(constraints) {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    handleSuccess(stream);
+  } catch (e) {
+    console.error('navigator.getUserMedia error:', e);
+    errorMsgElement.innerHTML = `navigator.getUserMedia error:${e.toString()}`;
+  }
+}
+
+document.querySelector('button#start').addEventListener('click', async () => {
+  document.querySelector('button#start').disabled = true;
+  const hasEchoCancellation = document.querySelector('#echoCancellation').checked;
+  const constraints = {
+    audio: {
+      echoCancellation: {exact: hasEchoCancellation}
+    },
+    video: {
+      width: 1280, height: 720
     }
-  
-    // Use WebRTC getUserMedia method() and provide constraintObj
-    navigator.mediaDevices
-      .getUserMedia(constraintObj) // getUserMedia returns a promise
-      .then(function (mediaStreamObj) {
-        // on fullfillment you get a stream object
-        // connect the stream object to the first video element
-        const video = document.querySelector("#video-preview");
-        if ("srcObject" in video) {
-          video.srcObject = mediaStreamObj;
-        } else {
-          // legacy version
-          video.src = window.URL.createObjectURL(mediaStreamObj);
-        }
-  
-        // PREVIEW THE CURRENT WEBCAM STREAM
-        video.onloadedmetadata = () => video.play();
-  
-        // RECORDING PART
-        const start = document.getElementById("button-start");
-        const stop = document.getElementById("button-stop");
-        const videoPlayback = document.getElementById("video-playback");
-  
-        // MediaStream Recorind API (you pass in the stream object as parameter)
-        const mediaRecorder = new MediaRecorder(mediaStreamObj);
-        let dataChunks = [];
-  
-        // add listeners for start/stop clicks
-        start.addEventListener("click", () => {
-          mediaRecorder.start();
-          console.log(mediaRecorder.state);
-        });
-        stop.addEventListener("click", () => {
-          mediaRecorder.stop();
-          console.log(mediaRecorder.state);
-        });
-  
-        // store data chunks while recording
-        mediaRecorder.ondataavailable = function (ev) {
-          dataChunks.push(ev.data);
-        };
-  
-        // After pressing stop the onstop event fires
-        // Create a blob
-        mediaRecorder.onstop = () => {
-          let blob = new Blob(dataChunks, { type: "video/mp4;" });
-          // if there is another recording it is good to reset the data chunks, otherwise this gets appended
-          dataChunks = [];
-          // convert blob into objectURL
-          let videoURL = window.URL.createObjectURL(blob);
-          videoPlayback.src = videoURL;
-        };
-      })
-      .catch(err => {
-        console.log(err.name, err.message);
-        // If getUserMedia rejects the Promise one of the following errors may occur:
-        // AbortError - generic unknown cause
-        // NotAllowedError (SecurityError) - user rejected permissions
-        // NotFoundError - missing media track
-        // NotReadableError - user permissions given but hardware/OS error
-        // OverconstrainedError - constraint video settings preventing
-        // TypeError - audio: false, video: false
-      });
-  })();
+  };
+  console.log('Using media constraints:', constraints);
+  await init(constraints);
+});

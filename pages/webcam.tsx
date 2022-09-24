@@ -25,8 +25,4 @@ const Webcam: NextPage = () => {
 
 
 
-
-
-
-
 export default Webcam;

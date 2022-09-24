@@ -1,19 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WebRTC Webcam Demo</title>
-  </head>
+<!--
+ *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+-->
+<html>
+<head>
 
-  <body>
-    <video id="video-preview" muted></video>
-    <button style="height: 2rem;" id="button-start">🔴 START RECORDING</button
-    ><br /><br />
-    <button id="button-stop">🚫 STOP RECORDING</button>
-    
-    <video id="video-playback" controls></video>
+    <meta charset="utf-8">
+    <meta name="description" content="WebRTC code samples">
+    <meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1">
+    <meta itemprop="description" content="Client-side WebRTC code samples">
+    <meta itemprop="image" content="../../../images/webrtc-icon-192x192.png">
+    <meta itemprop="name" content="WebRTC code samples">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta id="theme-color" name="theme-color" content="#ffffff">
 
-    <script src="webcam-recorder-previewer.js"></script>
-  </body>
+    <base target="_blank">
+
+    <title>MediaStream Recording</title>
+
+    <link rel="icon" sizes="192x192" href="webrtc-icon.png">
+    <link href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./css/submain.css">
+    <link rel="stylesheet" href="./css/main.css">
+
+</head>
+
+<body>
+
+<div id="container">
+
+    <video id="gum" playsinline autoplay muted></video>
+    <!-- <video id="recorded" playsinline loop></video> -->
+
+    <div>
+        <button id="start">Start camera</button>
+        <button id="record" disabled>Start Recording</button>
+        <button id="play" disabled>Play</button>
+        <button id="download" disabled>Download</button>
+    </div>
+
+    <div>
+        Recording format: <select id="codecPreferences" disabled></select>
+    </div>
+    <div>
+        <h4>Media Stream Constraints options</h4>
+        <p>Echo cancellation: <input type="checkbox" id="echoCancellation"></p>
+    </div>
+
+    <div>
+        <span id="errorMsg"></span>
+    </div>
+
+    <button onclick="">
+
+    </button>
+
+</div>
+
+<!-- include adapter for srcObject shim -->
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+<script src="webcam-recorder-previewer.js" async></script>
+<script src="webcam-recoder.js"></script>
+
+</body>
 </html>
