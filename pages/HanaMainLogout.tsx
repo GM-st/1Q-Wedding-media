@@ -65,8 +65,8 @@ const Home: NextPage = () => {
 		</h1>
 		<p className="px-8 mt-8 mb-12 text-lg"></p>
 		<div className="flex flex-wrap justify-center">
-			<button onClick={()=>{location.href="http://localhost:8080/hanaLogin"}} className="px-8 py-3 m-2 text-lg font-semibold rounded bg-teal-600 text-gray-50">로그인</button>
-			<button onClick={()=>{location.href="http://localhost:8080/join"}} className="px-8 py-3 m-2 text-lg border rounded text-gray-900 border-gray-300">회원가입</button>
+			<button onClick={()=>{location.href="http://localhost:8080/hanaLogin"}} className="px-8 py-3 m-2 text-lg font-semibold rounded bg-teal-600 text-gray-50">로그아웃</button>
+
 		  </div>
 	    </div>
       </section>
