@@ -17,6 +17,7 @@ const QRCode = ({ data } : any) => {
   };
 
   const qrcode = (
+    
     <QRCodeCanvas
       id="qrCode"
       value={url}
