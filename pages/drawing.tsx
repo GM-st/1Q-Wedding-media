@@ -8,12 +8,22 @@ function Drawing(): JSX.Element {
     signCanvas.current.clear();
   };
 
-  const save = () => {
+  const save = async () => {
+    console.log("try save");
     const image = signCanvas.current.getTrimmedCanvas().toDataURL("image/png");
     const link = document.createElement("a");
     link.href = image;
     link.download = "sample.png";
     link.click();
+    // const { uploadURL } = await (await fetch(`/api/files`)).json();
+    // const form = new FormData();
+    // form.append("file", image[0]);
+    // const {} = await (
+    //   await fetch(uploadURL, {
+    //     method: "POST",
+    //     body: form,
+    //   })
+    // ).json();
   };
 
   return (
