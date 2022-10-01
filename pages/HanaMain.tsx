@@ -36,7 +36,7 @@ const Home: NextPage = () => {
 		</a>
 		<ul className="items-stretch hidden space-x-3 md:flex">
 			<li className="flex">
-				<a rel="noopener noreferrer" href="#" className="flex items-center px-4 -mb-1 border-b-2 border-transparent">신랑신부등록</a>
+				<a rel="noopener noreferrer" href="http://localhost:8080/marryAgreeForm" className="flex items-center px-4 -mb-1 border-b-2 border-transparent">신랑신부등록</a>
 			</li>
 			<li className="flex">
 				<a rel="noopener noreferrer" href="#" className="flex items-center px-4 -mb-1 border-b-2 border-transparent">마이페이지</a>
@@ -71,6 +71,12 @@ const Home: NextPage = () => {
 	    </div>
       </section>
     </div>
+
+	
+	
+
+
+
 
 	
     <div>
